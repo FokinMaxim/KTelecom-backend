@@ -14,7 +14,7 @@ class UserRegister(BaseModel):
     login: str
     password: str
     email: EmailStr
-    email_notifications: bool = True
+    email_notifications: bool = False
     telegram_login: Optional[str] = None
     telegram_notifications: bool = False
 

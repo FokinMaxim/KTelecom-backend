@@ -13,7 +13,7 @@ class UserModel(Base):
     login = Column(String(50), unique=True, nullable=False, index=True)
     password_hash = Column(String(255), nullable=False)
     email = Column(String(100), unique=True, nullable=False, index=True)
-    email_notifications = Column(Boolean, nullable=False, default=True)
+    email_notifications = Column(Boolean, nullable=False, default=False)
     telegram_login = Column(String(50), unique=True, nullable=True)
     telegram_notifications = Column(Boolean, nullable=False, default=False)
 

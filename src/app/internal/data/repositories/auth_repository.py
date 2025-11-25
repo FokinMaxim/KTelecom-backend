@@ -137,32 +137,67 @@ class AuthRepository:
         return user
 
     async def register_user(self, user_in: UserRegister):
+        existing_user_by_login = await self.get_user_by_login(user_in.login)
+        if existing_user_by_login:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="User with this login already exists"
+            )
+
+        existing_user_by_email = await self.user_repo.get_user_by_email(user_in.email)
+        if existing_user_by_email:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="User with this email already exists"
+            )
+
         try:
             hashed = get_password_hash(user_in.password)
         except Exception as e:
-            raise HTTPException(status_code=500, detail="Server error while hashing password")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Server error while hashing password"
+            )
 
-        user_data = user_in.dict(exclude={"password"})
-        user_data["password_hash"] = hashed
-
-        if "uuid" in user_data:
-            del user_data["uuid"]
+        user_data = {
+            "login": user_in.login,
+            "email": user_in.email,
+            "password_hash": hashed,
+            "email_notifications": user_in.email_notifications,
+            "telegram_login": user_in.telegram_login,
+            "telegram_notifications": user_in.telegram_notifications
+        }
 
         try:
             user_entity = UserEntity(**user_data)
         except TypeError as e:
-            raise HTTPException(status_code=500, detail=f"UserEntity construction error: {e}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"UserEntity construction error: {e}"
+            )
 
         try:
             created = await self.create_user(user_entity)
+            return created
         except IntegrityError as ie:
+            # Дополнительная проверка на случай race condition
             if "login" in str(ie).lower():
-                raise HTTPException(status_code=400, detail="User with this login already exists")
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="User with this login already exists"
+                )
             elif "email" in str(ie).lower():
-                raise HTTPException(status_code=400, detail="User with this email already exists")
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="User with this email already exists"
+                )
             else:
-                raise HTTPException(status_code=400, detail="User with given credentials already exists")
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="User with given credentials already exists"
+                )
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Failed to create user: {e}")
-
-        return created
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Failed to create user: {e}"
+            )

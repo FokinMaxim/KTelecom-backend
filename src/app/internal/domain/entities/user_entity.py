@@ -7,9 +7,9 @@ class UserEntity(BaseModel):
     login: str
     password_hash: str
     email: str
-    email_notifications: bool
+    email_notifications: bool = False
     telegram_login: Optional[str] = None
-    telegram_notifications: bool
+    telegram_notifications: bool = False
 
     class Config:
         from_attributes = True
