@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from jose import jwt, JWTError
 from passlib.context import CryptContext
 from dotenv import load_dotenv
-
+from uuid import UUID
 
 load_dotenv()
 
@@ -14,11 +14,14 @@ REFRESH_TOKEN_EXPIRE_DAYS = int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", "7"))
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+
 def verify_password(plain: str, hashed: str) -> bool:
     return pwd_context.verify(plain, hashed)
 
+
 def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
+
 
 def create_access_token(subject: str, expires_delta: timedelta | None = None) -> str:
     now = datetime.utcnow()
@@ -28,6 +31,7 @@ def create_access_token(subject: str, expires_delta: timedelta | None = None) ->
     to_encode = {"sub": str(subject), "iat": now, "exp": expire}
     encoded = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded
+
 
 def decode_access_token(token: str):
     try:
