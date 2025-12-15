@@ -19,6 +19,6 @@ class UserModel(Base):
 
     # Relationships
     refresh_tokens = relationship("RefreshTokenModel", back_populates="user", lazy="selectin")
-    #queues_owned = relationship("QueueModel", back_populates="owner", lazy="selectin")
+    queues_owned = relationship("QueueModel", back_populates="owner", lazy="selectin")
     #records = relationship("RecordModel", back_populates="user", lazy="selectin")
 

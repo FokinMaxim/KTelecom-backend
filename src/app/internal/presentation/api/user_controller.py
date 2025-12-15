@@ -1,12 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from uuid import UUID, uuid4
+from uuid import UUID
 from typing import List
 from src.config.database import get_db
 from src.app.internal.data.repositories.user_repository import UserRepository
-from src.app.internal.domain.entities.user_entity import UserEntity
 from src.app.internal.presentation.scheme.user_schema import (
-    UserCreate, UserUpdate, UserResponse, UserLogin,
+    UserCreate, UserUpdate, UserResponse,
     UserEmailUpdate, UserTelegramUpdate
 )
 
@@ -15,34 +14,6 @@ router = APIRouter(prefix="/users", tags=["users"])
 
 def get_user_repository(db: Session = Depends(get_db)):
     return UserRepository(db)
-
-
-@router.post("/", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-async def create_user(
-        user: UserCreate,
-        user_repo: UserRepository = Depends(get_user_repository)
-):
-    # Check if login already exists
-    existing_user = await user_repo.get_user_by_login(user.login)
-    if existing_user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Login already registered"
-        )
-
-    # Check if email already exists
-    existing_email = await user_repo.get_user_by_email(user.email)
-    if existing_email:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email already registered"
-        )
-
-    user_data = user.dict()
-    user_data['uuid'] = uuid4()
-    user_entity = UserEntity(**user_data)
-    created_user = await user_repo.create_user(user_entity)
-    return created_user
 
 
 @router.get("/{user_uuid}", response_model=UserResponse)
@@ -78,7 +49,7 @@ async def get_user_by_login(
     return user
 
 
-@router.put("/{user_uuid}", response_model=UserResponse)
+@router.patch("/{user_uuid}", response_model=UserResponse)
 async def update_user(
         user_uuid: UUID,
         user_update: UserUpdate,
