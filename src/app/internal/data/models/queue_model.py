@@ -16,5 +16,5 @@ class QueueModel(Base):
 
     # Relationships
     owner = relationship("UserModel", back_populates="queues_owned")
-    #comments = relationship("CommentModel", back_populates="queue", lazy="dynamic")
-    #records = relationship("RecordModel", back_populates="queue", lazy="dynamic")
+    comments = relationship("CommentModel", back_populates="queue", lazy="selectin")
+    records = relationship("RecordModel", back_populates="queue")
