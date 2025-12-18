@@ -59,6 +59,7 @@ class RecordRepository(IRecordRepository):
             .first()
         )
 
+        print(update_data)
         if not db_record:
             return None
 
