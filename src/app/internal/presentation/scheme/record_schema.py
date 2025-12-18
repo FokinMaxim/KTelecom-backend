@@ -3,6 +3,8 @@ from uuid import UUID
 from datetime import datetime
 from typing import Optional
 from src.app.internal.data.models.record_model import UrgencyLevel, Status
+from typing import List
+from src.app.internal.presentation.scheme.attachment_schema import AttachmentResponse
 
 
 class RecordCreate(BaseModel):
@@ -30,5 +32,7 @@ class RecordResponse(BaseModel):
     status: Status
     manager_comment: Optional[str]
 
+    attachments: List[AttachmentResponse]
+
     class Config:
-        orm_mode = True
+        from_attributes = True

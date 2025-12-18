@@ -35,4 +35,9 @@ class RecordModel(Base):
     # Relationships
     user = relationship("UserModel", back_populates="records")
     queue = relationship("QueueModel", back_populates="records")
-    #attachments = relationship("AttachmentModel", back_populates="record", lazy="selectin")
+    attachments = relationship(
+        "AttachmentModel",
+        back_populates="record",
+        lazy="selectin",
+        cascade="all, delete-orphan"
+    )

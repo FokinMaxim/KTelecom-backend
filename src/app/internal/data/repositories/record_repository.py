@@ -5,6 +5,8 @@ from typing import List, Optional
 from src.app.internal.data.models.record_model import RecordModel
 from src.app.internal.domain.entities.record_entity import RecordEntity
 from src.app.internal.domain.interfaces.record_interface import IRecordRepository
+from sqlalchemy.orm import selectinload
+from src.app.internal.data.models.attachment_model import AttachmentModel
 
 
 class RecordRepository(IRecordRepository):
@@ -27,6 +29,7 @@ class RecordRepository(IRecordRepository):
     async def get_record(self, record_id: UUID) -> Optional[RecordEntity]:
         db_record = (
             self.db.query(RecordModel)
+            .options(selectinload(RecordModel.attachments))
             .filter(RecordModel.record_id == record_id)
             .first()
         )
@@ -35,6 +38,7 @@ class RecordRepository(IRecordRepository):
     async def get_records_by_queue(self, queue_id: UUID) -> List[RecordEntity]:
         records = (
             self.db.query(RecordModel)
+            .options(selectinload(RecordModel.attachments))
             .filter(RecordModel.queue_id == queue_id)
             .all()
         )
@@ -43,6 +47,7 @@ class RecordRepository(IRecordRepository):
     async def get_records_by_user(self, user_id: UUID) -> List[RecordEntity]:
         records = (
             self.db.query(RecordModel)
+            .options(selectinload(RecordModel.attachments))
             .filter(RecordModel.user_id == user_id)
             .all()
         )

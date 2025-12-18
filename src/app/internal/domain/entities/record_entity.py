@@ -1,22 +1,22 @@
 from pydantic import BaseModel
 from uuid import UUID
 from datetime import datetime
-from typing import Optional
-
+from typing import Optional, List
 from src.app.internal.data.models.record_model import UrgencyLevel, Status
-
+from src.app.internal.domain.entities.attachment_entity import AttachmentEntity
 
 class RecordEntity(BaseModel):
-    record_id: Optional[UUID] = None
+    record_id: UUID
     user_id: UUID
     queue_id: UUID
-
     purpose: str
     meeting_datetime: datetime
+    urgency_level: UrgencyLevel
+    status: Status
+    manager_comment: Optional[str]
 
-    urgency_level: UrgencyLevel = UrgencyLevel.MEDIUM
-    status: Status = Status.PENDING
-    manager_comment: Optional[str] = None
+    attachments: List[AttachmentEntity] = []
 
     class Config:
         from_attributes = True
+
