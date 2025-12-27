@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, status, File
 from uuid import UUID
 from typing import List
 
@@ -54,7 +54,7 @@ async def check_attachment_permissions(
 )
 async def attach_file_to_record(
         record_id: UUID,
-        file: UploadFile,
+        file: UploadFile = File(...),
         current_user: UserEntity = Depends(get_current_user),
         attachment_repo: AttachmentRepository = Depends(get_attachment_repository),
         record_repo: RecordRepository = Depends(get_record_repository),

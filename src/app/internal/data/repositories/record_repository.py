@@ -5,6 +5,8 @@ from typing import List, Optional
 from src.app.internal.data.models.record_model import RecordModel
 from src.app.internal.domain.entities.record_entity import RecordEntity
 from src.app.internal.domain.interfaces.record_interface import IRecordRepository
+from src.app.internal.domain.services.s3_service import S3StorageService
+from src.app.internal.data.models.attachment_model import AttachmentModel
 
 
 class RecordRepository(IRecordRepository):
@@ -72,18 +74,35 @@ class RecordRepository(IRecordRepository):
         return RecordEntity.from_orm(db_record)
 
     async def delete_record(self, record_id: UUID) -> bool:
-        db_record = (
-            self.db.query(RecordModel)
-            .filter(RecordModel.record_id == record_id)
-            .first()
-        )
+        s3_service = S3StorageService()
+        try:
+            db_record = (
+                self.db.query(RecordModel)
+                .filter(RecordModel.record_id == record_id)
+                .first()
+            )
 
-        if not db_record:
-            return False
+            if not db_record:
+                return False
 
-        self.db.delete(db_record)
-        self.db.commit()
-        return True
+            attachments = (
+                self.db.query(AttachmentModel)
+                .filter(AttachmentModel.record_id == record_id)
+                .all()
+            )
+
+            for attachment in attachments:
+                s3_service.delete(
+                    object_key=attachment.object_key
+                )
+
+            self.db.delete(db_record)
+            self.db.commit()
+            return True
+
+        except Exception:
+            self.db.rollback()
+            raise
 
     async def has_time_collision(
             self,
