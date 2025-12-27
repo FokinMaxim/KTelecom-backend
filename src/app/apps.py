@@ -6,6 +6,7 @@ from src.app.internal.presentation.api.auth_controller  import router as auth_ro
 from src.app.internal.presentation.api.queue_controller  import router as queque_router
 from src.app.internal.presentation.api.record_controller  import router as record_router
 from src.app.internal.presentation.api.comment_controller  import router as comment_router
+from src.app.internal.presentation.api.attachment_controller  import router as attachment_router
 
 Base.metadata.create_all(bind=engine)
 
@@ -21,3 +22,4 @@ app.include_router(auth_router)
 app.include_router(queque_router)
 app.include_router(record_router)
 app.include_router(comment_router)
+app.include_router(attachment_router)

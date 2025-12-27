@@ -15,6 +15,9 @@ async def get_queue_comments(
     comment_repo=Depends(get_comment_repository),
     queue_repo=Depends(get_queue_repository),
 ):
+    """
+        Возвращает 5 последних комментариев пользователя
+    """
     use_case = GetQueueCommentsUseCase(queue_repo, comment_repo)
 
     try:
@@ -47,6 +50,12 @@ async def upsert_comment(
     record_repo=Depends(get_record_repository),
     queue_repo=Depends(get_queue_repository)
 ):
+    """
+        Добавление комментария Владельца очереди к заявке.
+        Если передано только record_id и text, то считается, что комментарий новый.
+        Если добавлено comment_id с id одного из 5 последних комментариев, то программа не будет
+        обновлять список последних комментариев, только изменит последнюю дату использования переданного комментария
+    """
     use_case = UpsertCommentUseCase(
         record_repo=record_repo,
         comment_repo=comment_repo,

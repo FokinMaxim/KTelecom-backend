@@ -13,11 +13,11 @@ class RecordCreate(BaseModel):
 
 
 class RecordUpdate(BaseModel):
-    purpose: Optional[str]
-    meeting_datetime: Optional[datetime]
-    urgency_level: Optional[UrgencyLevel]
-    status: Optional[Status]
-    manager_comment: Optional[str]
+    purpose: Optional[str] = None
+    meeting_datetime: Optional[datetime] = None
+    urgency_level: Optional[UrgencyLevel] = None
+    status: Optional[Status] = None
+    manager_comment: Optional[str] = None
 
 
 class RecordResponse(BaseModel):
