@@ -98,16 +98,21 @@ class AttachmentRepository(IAttachmentRepository):
     # Download (presigned URL)
     # =========================
     async def get_download_url(
-        self,
-        *,
-        attachment_id: UUID,
-        expires: int = 3600,
+            self,
+            *,
+            attachment_id: UUID,
+            expires: int = 3600,
     ) -> str:
-        attachment = await self.get_by_id(attachment_id)
+        attachment = (
+            self.db.query(AttachmentModel)
+            .filter(AttachmentModel.attachment_id == attachment_id)
+            .first()
+        )
         if not attachment:
             raise ValueError("Attachment not found")
 
         return self.s3_service.generate_download_url(
             object_key=attachment.object_key,
+            original_filename=attachment.original_filename,
             expires=expires,
         )
