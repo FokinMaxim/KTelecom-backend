@@ -34,3 +34,7 @@ app.include_router(queque_router)
 app.include_router(record_router)
 app.include_router(comment_router)
 app.include_router(attachment_router)
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}

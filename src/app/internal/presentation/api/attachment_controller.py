@@ -67,10 +67,16 @@ async def attach_file_to_record(
         queue_repo=queue_repo,
     )
 
-    return await attachment_repo.attach_file(
-        record_id=record_id,
-        file=file,
-    )
+    try:
+        return await attachment_repo.attach_file(
+            record_id=record_id,
+            file=file,
+        )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail=str(e),
+        )
 
 
 @router.get(

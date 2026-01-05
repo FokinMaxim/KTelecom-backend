@@ -11,6 +11,8 @@ services:
       - db
     volumes:
       - ./logs:/logs
+    mem_limit: 512m
+    memswap_limit: 512m
 
   db:
     image: postgres:14-alpine

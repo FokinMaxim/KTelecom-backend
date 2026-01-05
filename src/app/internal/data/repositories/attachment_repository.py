@@ -1,3 +1,5 @@
+import os
+
 from fastapi import UploadFile
 from src.app.internal.domain.entities.attachment_entity import AttachmentEntity
 from src.app.internal.domain.interfaces.record_interface import IRecordRepository
@@ -8,6 +10,8 @@ from uuid import UUID
 from sqlalchemy.orm import Session
 from src.app.internal.data.models.attachment_model import AttachmentModel
 
+
+MAX_FILE_SIZE = 5 * 1024 * 1024
 
 class AttachmentRepository(IAttachmentRepository):
     def __init__(
@@ -29,6 +33,15 @@ class AttachmentRepository(IAttachmentRepository):
         record_id: UUID,
         file: UploadFile,
     ) -> AttachmentEntity:
+
+        file.file.seek(0, os.SEEK_END)
+        file_size = file.file.tell()
+        file.file.seek(0)
+
+        if file_size > MAX_FILE_SIZE:
+            raise ValueError("File size exceeds 5 MB limit")
+
+
         record = await self.record_repo.get_record(record_id)
         if not record:
             raise ValueError("Record not found")

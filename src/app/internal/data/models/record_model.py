@@ -13,11 +13,10 @@ class UrgencyLevel(enum.Enum):
     CRITICAL = "critical"
 
 class Status(enum.Enum):
-    PENDING = "pending"
+    NEW = "new"
     CONFIRMED = "confirmed"
-    COMPLETED = "completed"
-    CANCELLED = "cancelled"
     REJECTED = "rejected"
+    PENDING = "pending"
 
 
 class RecordModel(Base):
@@ -29,7 +28,7 @@ class RecordModel(Base):
     purpose = Column(Text, nullable=False)
     meeting_datetime = Column(DateTime, nullable=False)
     urgency_level = Column(Enum(UrgencyLevel), nullable=False, default=UrgencyLevel.MEDIUM)
-    status = Column(Enum(Status), nullable=False, default=Status.PENDING)
+    status = Column(Enum(Status), nullable=False, default=Status.NEW)
     manager_comment = Column(Text, nullable=True)
 
     # Relationships
