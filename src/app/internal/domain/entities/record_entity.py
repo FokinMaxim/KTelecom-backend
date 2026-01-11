@@ -20,3 +20,7 @@ class RecordEntity(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class RecordReschedule(BaseModel):
+    meeting_datetime: datetime

@@ -71,3 +71,22 @@ class UserRepository(IUserRepository):
             self.db.commit()
             return True
         return False
+
+    async def save_telegram_chat_id(
+            self,
+            username: str,
+            chat_id: int,
+    ) -> None:
+        print(username, chat_id)
+        user = (
+            self.db.query(UserModel)
+            .filter(UserModel.telegram_login == f'@{username}')
+            .first()
+        )
+
+        if not user:
+            return
+
+        print('SUCCESS')
+        user.telegram_chat_id = chat_id
+        self.db.commit()

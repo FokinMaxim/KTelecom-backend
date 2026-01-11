@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Boolean, DateTime, Integer, Text, ForeignKey, Enum, Interval
+from sqlalchemy import Column, DateTime, Text, ForeignKey, Enum, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from src.config.database import Base
@@ -30,6 +30,7 @@ class RecordModel(Base):
     urgency_level = Column(Enum(UrgencyLevel), nullable=False, default=UrgencyLevel.MEDIUM)
     status = Column(Enum(Status), nullable=False, default=Status.NEW)
     manager_comment = Column(Text, nullable=True)
+    status_updated_at = Column( DateTime(timezone=True), nullable=False, server_default=func.now())
 
     # Relationships
     user = relationship("UserModel", back_populates="records")

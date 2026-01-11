@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from uuid import UUID, uuid4
 from typing import List, Optional
 
@@ -51,27 +52,39 @@ class RecordRepository(IRecordRepository):
         return [RecordEntity.from_orm(r) for r in records]
 
     async def update_record_partial(
-        self,
-        record_id: UUID,
-        update_data: dict
-    ) -> Optional[RecordEntity]:
+            self,
+            record_id: UUID,
+            update_data: dict
+    ) -> Optional[tuple[RecordEntity, bool]]:
+
         db_record = (
             self.db.query(RecordModel)
             .filter(RecordModel.record_id == record_id)
             .first()
         )
 
-        print(update_data)
         if not db_record:
             return None
+
+        old_status = db_record.status
 
         for key, value in update_data.items():
             if hasattr(db_record, key) and key != "record_id":
                 setattr(db_record, key, value)
 
+        status_changed = (
+                "status" in update_data
+                and update_data["status"] != old_status
+        )
+
+        if status_changed:
+            db_record.status_updated_at = func.now()
+
         self.db.commit()
         self.db.refresh(db_record)
-        return RecordEntity.from_orm(db_record)
+
+        return RecordEntity.from_orm(db_record), status_changed
+
 
     async def delete_record(self, record_id: UUID) -> bool:
         s3_service = S3StorageService()

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Boolean
+from sqlalchemy import Column, String, Boolean, BigInteger
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from src.config.database import Base
@@ -15,6 +15,7 @@ class UserModel(Base):
     email = Column(String(100), unique=True, nullable=False, index=True)
     email_notifications = Column(Boolean, nullable=False, default=False)
     telegram_login = Column(String(50), unique=True, nullable=True)
+    telegram_chat_id = Column(BigInteger, nullable=True)
     telegram_notifications = Column(Boolean, nullable=False, default=False)
 
     # Relationships

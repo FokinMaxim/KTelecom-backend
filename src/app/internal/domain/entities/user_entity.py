@@ -9,6 +9,7 @@ class UserEntity(BaseModel):
     email: str
     email_notifications: bool = False
     telegram_login: Optional[str] = None
+    telegram_chat_id: int | None
     telegram_notifications: bool = False
 
     class Config:

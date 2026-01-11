@@ -79,13 +79,13 @@ async def update_user(
                 detail="Email already taken"
             )
 
-    if user_update.telegram_login:
-        existing_telegram = await user_repo.get_user_by_telegram(user_update.telegram_login)
-        if existing_telegram and existing_telegram.uuid != user_uuid:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Telegram login already taken"
-            )
+    #if user_update.telegram_login:
+    #    existing_telegram = await user_repo.get_user_by_telegram(user_update.telegram_login)
+    #    if existing_telegram and existing_telegram.uuid != user_uuid:
+    #        raise HTTPException(
+    #            status_code=status.HTTP_400_BAD_REQUEST,
+    #            detail="Telegram login already taken"
+    #        )
 
     update_data = user_update.dict(exclude_unset=True)
     updated_user = await user_repo.update_user_partial(user_uuid, update_data)

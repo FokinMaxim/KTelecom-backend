@@ -12,10 +12,12 @@ class UpsertCommentUseCase:
         record_repo,
         queue_repo,
         comment_repo,
+        notification_service,
     ):
         self.record_repo = record_repo
         self.queue_repo = queue_repo
         self.comment_repo = comment_repo
+        self.notification_service = notification_service
 
     async def execute(
         self,
@@ -60,7 +62,11 @@ class UpsertCommentUseCase:
                 record_id=record.record_id,
                 update_data={"manager_comment": text}
             )
-            print(text)
+            await self.notification_service.notify_record_owner_comment_added(
+                record_id=record.record_id,
+                record_owner_id=record.user_id,
+                comment_text=text,
+            )
             return
 
         comment = await self.comment_repo.get_comment(comment_id)
@@ -79,4 +85,11 @@ class UpsertCommentUseCase:
             record_id=record.record_id,
             update_data={"manager_comment": text}
         )
-        print(text)
+        print(text, record.user_id)
+        await self.notification_service.notify_record_owner_comment_added(
+            record_id=record.record_id,
+            record_owner_id=record.user_id,
+            comment_text=text,
+        )
+
+        return

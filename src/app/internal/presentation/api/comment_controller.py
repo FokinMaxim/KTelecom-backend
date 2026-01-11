@@ -48,7 +48,8 @@ async def upsert_comment(
     current_user=Depends(get_current_user),
     comment_repo=Depends(get_comment_repository),
     record_repo=Depends(get_record_repository),
-    queue_repo=Depends(get_queue_repository)
+    queue_repo=Depends(get_queue_repository),
+    notification_service=Depends(get_notification_service)
 ):
     """
         Добавление комментария Владельца очереди к заявке.
@@ -59,7 +60,8 @@ async def upsert_comment(
     use_case = UpsertCommentUseCase(
         record_repo=record_repo,
         comment_repo=comment_repo,
-        queue_repo=queue_repo
+        queue_repo=queue_repo,
+        notification_service=notification_service
     )
 
     try:

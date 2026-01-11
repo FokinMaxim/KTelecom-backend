@@ -32,3 +32,6 @@ class RecordResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class RecordStatusUpdate(BaseModel):
+    status: Status
